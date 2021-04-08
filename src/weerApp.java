@@ -2,23 +2,33 @@ import java.net.URL;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import java.util.Scanner;
 
 
 public class weerApp {
 
     static String apiKey = "YOUR_API_KEY";
-    static String city = "den haag";
+    static String city = "Den+Bosch";
 
     // Main Method die de data via een HTTP client (class weerData) gaat ophalen
     public static void main(String[] args) {
         String antwoord = "";
 
+        String city = "Den+Bosch";
+        System.out.println("Voer je plaats in: ");
+        Scanner invoer = new Scanner(System.in);
+        String input = invoer.nextLine();
+        if (input.isEmpty()){
+            input = city;
+        }
+        String stad = input.replaceAll(" ", "+").toLowerCase();
+
         try {
-            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey);
+            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + stad + "&appid=" + apiKey);
             weerData ht = new weerData(url);
             //Connect to a HTTP url with "Connect Method", "User" and "Password" if required only.
             String json = ht.httpConnect("", "GET", "user", "password");
-            System.out.println("lengte JSON : " + json.length());
+//            System.out.println("lengte JSON : " + json.length());
             antwoord = json.substring(0,(json.length()-1));
             try {
                 weerDataParser parseData = new weerDataParser();
@@ -26,13 +36,13 @@ public class weerApp {
             } catch (Exception e) {
                 System.out.println("werkt niet");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         //programma klaar
         System.out.println("***********>>>> Tot zover het weerbericht <<<<**************");
     }
+
 }
 
 //classe om de weer info uit de String te halen en in de terminal te printen
