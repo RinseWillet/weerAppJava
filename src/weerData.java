@@ -5,7 +5,6 @@ import java.util.Base64;
 import java.util.Base64.*;
 import javax.net.ssl.*;
 
-
 //classe om een URL te parsen - voorbeeld naar http://javaonlinelessons.com/misc/how-to-get-weather-data-using-java/
 public final class weerData {
 

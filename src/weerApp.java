@@ -4,10 +4,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.Scanner;
 
-
 public class weerApp {
 
-    static String apiKey = "YOUR_API_KEY";
+    static String apiKey = "9cbe90aaed00fc55a6bbf47a4b6c2678";
     static String city = "Den+Bosch";
 
     // Main Method die de data via een HTTP client (class weerData) gaat ophalen
