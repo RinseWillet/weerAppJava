@@ -108,7 +108,8 @@ class weerDataPrinter{
 
             // windsnelheid
             double windSpeed = Double.valueOf(antwoord.substring(antwoord.indexOf("speed")+7, antwoord.indexOf(",\"deg\"")));
-            System.out.println("Windsnelheid: " + windSpeed + " m/s");
+            System.out.printf("Windsnelheid: %.1f", windSpeed);
+            System.out.println(" m/s");
 
             //windrichting
             int windDeg = 0;
