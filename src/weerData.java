@@ -20,13 +20,13 @@ public final class weerData {
         System.out.println("Starting HTTP Request....");
 
         //Start een nieuwe HttpURLConnection (uit java.net.*) waarbij je het URL object cast als een HttpURLConnection en de openConnection methode gebruikt van het URL object
-        HttpURLConnection con = (HttpURLConnection) httpurl.openConnection();
+        HttpURLConnection verbinding = (HttpURLConnection) httpurl.openConnection();
 
-        //Connectie krijgen met de connect() methode uit het HttpURLConnection object 'con'
-        con.connect();
+        //Connectie krijgen met de connect() methode uit het HttpURLConnection object 'verbinding'
+        verbinding.connect();
 
         // Antwoord van de connectie krijgen met de getResponseCode() methode
-        System.out.println("Connection Response code:" + con.getResponseCode());
+        System.out.println("Connection Response code:" + verbinding.getResponseCode());
 
 
         //Uitlezen HTTP antwoord.
@@ -34,8 +34,8 @@ public final class weerData {
         InputStream antwoord = null;
 
         try {
-            //gebruik de methode getInputStream die in het HttpURLConnection object 'con' zit om de leash 'antwoord' van InputStream te koppelen. Een Inputstream is een stroom informatie die vloeit uit een open connectie (HTTP)
-            antwoord = con.getInputStream();
+            //gebruik de methode getInputStream die in het HttpURLConnection object 'verbinding' zit om de leash 'antwoord' van InputStream te koppelen. Een Inputstream is een stroom informatie die vloeit uit een open connectie (HTTP)
+            antwoord = verbinding.getInputStream();
 
             // je gebruikt nu de read() methode uit de InputStream 'antwoord' om een integer te vullen met de data die binnenkomt. De getallen in de integers staan gelijk aan ASCII codes voor tekens
             int leesGetal = antwoord.read();
@@ -60,12 +60,10 @@ public final class weerData {
             }
             //vang fouten (exceptions) af
         } catch (Exception ex) {
-            // print de stacktrace
-            ex.printStackTrace();
             //print de responsecode, als die niet 200 is (= alles okay), dan een IOException throwen
-            System.out.println("HTTP ResponseCode=" + con.getResponseCode());
-            if (con.getResponseCode() != 200) {
-                throw new IOException(con.getResponseMessage());
+            System.out.println("HTTP ResponseCode=" + verbinding.getResponseCode() + " plaats niet gevonden");
+            if (verbinding.getResponseCode() != 200) {
+                throw new IOException(verbinding.getResponseMessage());
             }
         }
 

@@ -1,9 +1,4 @@
 import java.net.URL;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class weerApp {
@@ -51,13 +46,14 @@ public class weerApp {
                 weerDataPrinter printData = new weerDataPrinter();
                 printData.getData(antwoord);
             } catch (Exception e) {
-                System.out.println("werkt niet");
+                System.out.println("Weerdata printen mislukt");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Weer opvragen mislukt");
+        } finally {
+            //programma klaar
+            System.out.println("***********>>>> Tot zover het weerbericht <<<<**************");
         }
-        //programma klaar
-        System.out.println("***********>>>> Tot zover het weerbericht <<<<**************");
     }
 }
 
