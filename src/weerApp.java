@@ -31,7 +31,7 @@ public class weerApp {
 
             weerData ht = new weerData(url);
             //hier wordt een string gevuld met een JSON antwoord door de httpConnect functie op te roepen in het aangemaakte weerData object
-            String jsonAntwoord = ht.httpConnect("", "GET");
+            String jsonAntwoord = ht.httpConnect();
 
             //het rauwe antwoord
 //            System.out.println("nog niks mee gedaan : " + jsonAntwoord);
@@ -76,19 +76,19 @@ class weerDataPrinter{
             //temperatuur in Celsius
             double tempF = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
             double tempC = tempF - 273.15;
-            System.out.printf("Temperatuur : %.2f", tempC);
+            System.out.printf("Temperatuur : %.1f", tempC);
             System.out.println(" graden Celsius.");
 
             // min. temperatuur in Celsius
             double tempFmin = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
             double tempCmin = tempFmin - 273.15;
-            System.out.printf("Min. Temp. : %.2f", tempCmin);
+            System.out.printf("Min. Temp. : %.1f", tempCmin);
             System.out.println(" graden Celsius.");
 
             // max. temperatuur in Celsius
             double tempFmax = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
             double tempCmax = tempFmax - 273.15;
-            System.out.printf("Max. Temp. : %.2f", tempCmax);
+            System.out.printf("Max. Temp. : %.1f", tempCmax);
             System.out.println(" graden Celsius.");
 
             // luchtdruk in hPa
@@ -111,7 +111,15 @@ class weerDataPrinter{
             System.out.println("Windsnelheid: " + windSpeed + " m/s");
 
             //windrichting
-            int windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg")+5, antwoord.indexOf(",\"gust\"")));
+            int windDeg = 0;
+            if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 7)))) {
+                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 8));
+            } else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 6))))  {
+                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 7));
+            } else {
+                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 6));
+            }
+
             String windRichting = "";
             if ((windDeg > 337) || (windDeg < 23)) {
                 windRichting = "N"; // 0 graden
@@ -122,13 +130,13 @@ class weerDataPrinter{
             } else if ((windDeg > 112) && (windDeg < 158)) {
                 windRichting = "Z/O"; // 135 graden
             } else if ((windDeg > 157) && (windDeg < 203)) {
-                windRichting = "Z"; // 180
+                windRichting = "Z"; // 180 graden
             } else if ((windDeg > 202) && (windDeg < 248)) {
-                windRichting = "Z/W"; //225
+                windRichting = "Z/W"; //225 graden
             } else if ((windDeg > 247) && (windDeg < 293)) {
-                windRichting = "W"; //270
+                windRichting = "W"; //270 graden
             } else if ((windDeg > 292) && (windDeg < 338)) {
-                windRichting = "N/W"; //315
+                windRichting = "N/W"; //315 graden
             }
             System.out.println("Windrichting : " + windRichting);
 

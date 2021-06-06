@@ -14,7 +14,7 @@ public final class weerData {
         httpurl = httpurl_;
     }
 
-    public String httpConnect(String outStr, String connectMethod) throws Exception {
+    public String httpConnect() throws Exception {
 
         //geef aan dat je in de methode zit
         System.out.println("Starting HTTP Request....");
@@ -40,7 +40,7 @@ public final class weerData {
             // je gebruikt nu de read() methode uit de InputStream 'antwoord' om een integer te vullen met de data die binnenkomt. De getallen in de integers staan gelijk aan ASCII codes voor tekens
             int leesGetal = antwoord.read();
 
-            System.out.println("check this out : " + leesGetal);
+//            System.out.println("check this out : " + leesGetal);
 
             //en iedere integer die binnenkomt gaan we wegschrijven in het StringWriter object 'antwoordStringWriter'.
             // Een Stringwriter slaat een characterstroom op in een string buffer, die vervolgens gebruikt kan worden om een string te bouwen
