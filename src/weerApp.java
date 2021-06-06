@@ -39,25 +39,17 @@ public class weerApp {
             String jsonAntwoord = ht.httpConnect("", "GET");
 
             //het rauwe antwoord
-            System.out.println("nog niks mee gedaan : " + jsonAntwoord);
+//            System.out.println("nog niks mee gedaan : " + jsonAntwoord);
 
             //lengte van deze string json
 //            System.out.println("lengte JSON : " + json.length());
 
             //hier wordt het allerlaatste karakter eraf gehaald
             antwoord = jsonAntwoord.substring(0,(jsonAntwoord.length()-1));
-//            System.out.println("ff gesubstringt : " + antwoord);
-
-            System.out.println("indexgetal : " + antwoord.indexOf("name"));
-            System.out.println(antwoord.substring(antwoord.indexOf("name")));
-
-
-
-
 
             try {
-                weerDataParser parseData = new weerDataParser();
-                parseData.getData(antwoord);
+                weerDataPrinter printData = new weerDataPrinter();
+                printData.getData(antwoord);
             } catch (Exception e) {
                 System.out.println("werkt niet");
             }
@@ -70,39 +62,83 @@ public class weerApp {
 }
 
 //classe om de weer info uit de String te halen en in de terminal te printen
-class weerDataParser{
+class weerDataPrinter{
 
     public boolean getData(String antwoord) throws Exception {
 
-        //JSON parser object aanmaken
-        JSONParser parser = new JSONParser();
-
         try {
 
-            //met de parser het argument (antwoord) als string gaan parsen naar een JSONObject
-            JSONObject jsonObject = (JSONObject) parser.parse(antwoord);
+            //plaatsnaam
+            System.out.println("Stad : " + antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name"))));
 
-            //Welke stad
-            System.out.println("Stad : " + jsonObject.get("name"));
+            //weertype
+            System.out.println("Weertype : " + antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main"))));
 
-            //algemene array uit object halen en printen
-            JSONArray tempData = (JSONArray) jsonObject.get("weather");
-            System.out.println("Weertype: " + ((JSONObject) tempData.get(0)).get("main"));
-            System.out.println("Beschrijving: " + ((JSONObject) tempData.get(0)).get("description"));
+            //beschrijving
+            System.out.println("Beschrijving : " + antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description"))));
 
-            //details data uit object halen, in array zetten en vervolgens printen
-            JSONObject tempData1 = (JSONObject) jsonObject.get("main");
-            System.out.printf("Temperatuur: %.2f",  (Double.parseDouble(tempData1.get("temp").toString()) - 273.15)); //in Deg C
+            //temperatuur in Celsius
+            double tempF = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
+            double tempC = tempF - 273.15;
+            System.out.printf("Temperatuur : %.2f", tempC);
             System.out.println(" graden Celsius.");
-            System.out.printf("Temperatuur Min: %.2f",(Double.parseDouble(tempData1.get("temp_min").toString()) - 273.15));//in Deg C
+
+            // min. temperatuur in Celsius
+            double tempFmin = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
+            double tempCmin = tempFmin - 273.15;
+            System.out.printf("Min. Temp. : %.2f", tempCmin);
             System.out.println(" graden Celsius.");
-            System.out.printf("Temperatuur Max: %.2f", (Double.parseDouble(tempData1.get("temp_max").toString()) - 273.15));//in Deg C
+
+            // max. temperatuur in Celsius
+            double tempFmax = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
+            double tempCmax = tempFmax - 273.15;
+            System.out.printf("Max. Temp. : %.2f", tempCmax);
             System.out.println(" graden Celsius.");
-            System.out.println("Luchtdruk: " + tempData1.get("pressure") + " hPa."); //hpa
-            System.out.println("Luchtvochtigheid: " + tempData1.get("humidity") + " %."); //%
+
+            // luchtdruk in hPa
+            int pressure = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
+            System.out.println("Luchtdruk: " + pressure + " hPa.");
+
+            // vochtigheid in %
+            int humidity = 0;
+            if(Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity")+12)))) {
+                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 13));
+            } else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity") + 11)))) {
+                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 12));
+            } else {
+                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 11));//
+            }
+            System.out.println("Luchtvochtigheid: " + humidity + " %.");
+
+            // windsnelheid
+            double windSpeed = Double.valueOf(antwoord.substring(antwoord.indexOf("speed")+7, antwoord.indexOf(",\"deg\"")));
+            System.out.println("Windsnelheid: " + windSpeed + " m/s");
+
+            //windrichting
+            int windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg")+5, antwoord.indexOf(",\"gust\"")));
+            String windRichting = "";
+            if ((windDeg > 337) || (windDeg < 23)) {
+                windRichting = "N"; // 0 graden
+            } else if ((windDeg > 22) && (windDeg < 68)) {
+                windRichting = "N/O"; // 45 graden
+            } else if ((windDeg > 67) && (windDeg < 113)) {
+                windRichting = "O"; // 90 graden
+            } else if ((windDeg > 112) && (windDeg < 158)) {
+                windRichting = "Z/O"; // 135 graden
+            } else if ((windDeg > 157) && (windDeg < 203)) {
+                windRichting = "Z"; // 180
+            } else if ((windDeg > 202) && (windDeg < 248)) {
+                windRichting = "Z/W"; //225
+            } else if ((windDeg > 247) && (windDeg < 293)) {
+                windRichting = "W"; //270
+            } else if ((windDeg > 292) && (windDeg < 338)) {
+                windRichting = "N/W"; //315
+            }
+            System.out.println("Windrichting : " + windRichting);
 
             //fouten catchen
         } catch (Exception e) {
+            System.out.println("Dit ging mis");
             e.printStackTrace();
             return false;
         }
