@@ -1,4 +1,5 @@
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class weerApp {
@@ -60,95 +61,89 @@ public class weerApp {
 //classe om de weer info uit de String te halen en in de terminal te printen
 class weerDataPrinter{
 
-    public boolean getData(String antwoord) throws Exception {
+    public void getData(String antwoord) throws Exception {
 
         try {
 
+            //hier gaan we alle data uit de response peuteren
+
             //plaatsnaam
-            System.out.println("Stad : " + antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name"))));
+            String stadRes = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
 
             //weertype
-            System.out.println("Weertype : " + antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main"))));
+            String weerTypeRes = antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main")));
 
             //beschrijving
-            System.out.println("Beschrijving : " + antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description"))));
+            String beschrijvingRes = antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description")));
 
             //temperatuur in Celsius
-            double tempF = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
-            double tempC = tempF - 273.15;
-            System.out.printf("Temperatuur : %.1f", tempC);
-            System.out.println(" graden Celsius.");
-
-            // min. temperatuur in Celsius
-            double tempFmin = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
-            double tempCmin = tempFmin - 273.15;
-            System.out.printf("Min. Temp. : %.1f", tempCmin);
-            System.out.println(" graden Celsius.");
-
-            // max. temperatuur in Celsius
-            double tempFmax = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
-            double tempCmax = tempFmax - 273.15;
-            System.out.printf("Max. Temp. : %.1f", tempCmax);
-            System.out.println(" graden Celsius.");
+            double tempKRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
+            double tempCRes = tempKRes - 273.15;
 
             // luchtdruk in hPa
-            int pressure = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
-            System.out.println("Luchtdruk: " + pressure + " hPa.");
+            int luchtdrukRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
 
-            // vochtigheid in %
-            int humidity = 0;
+            // vochtigheid in % - hier check je hoeveel getallen de waarde luchtdruk bevat in de String, met het Character.isDigit commando - dit is extra
+            int vochtigheidRes = 0;
             if(Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity")+12)))) {
-                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 13));
+                vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 13));
             } else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity") + 11)))) {
-                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 12));
+                vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 12));
             } else {
-                humidity = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 11));//
+                vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 11));//
             }
-            System.out.println("Luchtvochtigheid: " + humidity + " %.");
 
-            // windsnelheid
-            double windSpeed = Double.valueOf(antwoord.substring(antwoord.indexOf("speed")+7, antwoord.indexOf(",\"deg\"")));
-            System.out.printf("Windsnelheid: %.1f", windSpeed);
-            System.out.println(" m/s");
+            // windsnelheid in m/s - dit is extra
+            double windSpeedRes = Double.valueOf(antwoord.substring(antwoord.indexOf("speed")+7, antwoord.indexOf(",\"deg\"")));
 
-            //windrichting
-            int windDeg = 0;
+           //windrichting (van graden naar N-Z-O-W) - dit is extra
+            int richtingRes = 0;
             if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 7)))) {
-                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 8));
+                richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 8));
             } else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 6))))  {
-                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 7));
+                richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 7));
             } else {
-                windDeg = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 6));
+                richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 6));
             }
 
-            String windRichting = "";
-            if ((windDeg > 337) || (windDeg < 23)) {
-                windRichting = "N"; // 0 graden
-            } else if ((windDeg > 22) && (windDeg < 68)) {
-                windRichting = "N/O"; // 45 graden
-            } else if ((windDeg > 67) && (windDeg < 113)) {
-                windRichting = "O"; // 90 graden
-            } else if ((windDeg > 112) && (windDeg < 158)) {
-                windRichting = "Z/O"; // 135 graden
-            } else if ((windDeg > 157) && (windDeg < 203)) {
-                windRichting = "Z"; // 180 graden
-            } else if ((windDeg > 202) && (windDeg < 248)) {
-                windRichting = "Z/W"; //225 graden
-            } else if ((windDeg > 247) && (windDeg < 293)) {
-                windRichting = "W"; //270 graden
-            } else if ((windDeg > 292) && (windDeg < 338)) {
-                windRichting = "N/W"; //315 graden
+            // van graden naar N O Z W - dit is een extra
+            String kompasWaarde = "";
+            if ((richtingRes > 337) || (richtingRes < 23)) {
+                kompasWaarde = "N"; // 0 graden
+            } else if ((richtingRes > 22) && (richtingRes < 68)) {
+                kompasWaarde = "NO"; // 45 graden
+            } else if ((richtingRes > 67) && (richtingRes < 113)) {
+                kompasWaarde = "O"; // 90 graden
+            } else if ((richtingRes > 112) && (richtingRes < 158)) {
+                kompasWaarde = "ZO"; // 135 graden
+            } else if ((richtingRes > 157) && (richtingRes < 203)) {
+                kompasWaarde = "Z"; // 180 graden
+            } else if ((richtingRes > 202) && (richtingRes < 248)) {
+                kompasWaarde = "ZW"; //225 graden
+            } else if ((richtingRes > 247) && (richtingRes < 293)) {
+                kompasWaarde = "W"; //270 graden
+            } else if ((richtingRes > 292) && (richtingRes < 338)) {
+                kompasWaarde = "NW"; //315 graden
             }
-            System.out.println("Windrichting : " + windRichting);
+
+            // min. temperatuur in Celsius extra
+            double tempKminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
+            double tempCminRes = tempKminRes - 273.15;
+
+            // max. temperatuur in Celsius extra
+            double tempKmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
+            double tempCmaxRes = tempKmaxRes - 273.15;
+
+            System.out.printf("Plaats : " + stadRes + " - weertype : " + weerTypeRes + " - beschrijving : " + beschrijvingRes);
+            System.out.printf("\nTemperatuur : %.1f Min. : %.1f Max. : %.1f graden Celsius", tempCRes, tempCminRes, tempCmaxRes);
+            System.out.printf("\nLuchtdruk : %4d hPa Luchtvochtigheid : %3d procent", luchtdrukRes, vochtigheidRes);
+            System.out.printf("\nWind : %s %.1f m/s\n", kompasWaarde, windSpeedRes);
 
             //fouten catchen
         } catch (Exception e) {
             System.out.println("Dit ging mis");
             e.printStackTrace();
-            return false;
         }
-        //het is goed gegaan, true returnen
-        return true;
     }
 }
 
