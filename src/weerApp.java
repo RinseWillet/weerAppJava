@@ -1,5 +1,4 @@
 import java.net.URL;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class weerApp {
